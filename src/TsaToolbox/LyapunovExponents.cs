@@ -1,6 +1,5 @@
-﻿using ChaosSoft.Core.Data;
-using ChaosSoft.Core.IO;
-using ChaosSoft.NumericalMethods;
+﻿using ChaosSoft.Core;
+using ChaosSoft.Core.Data;
 using ChaosSoft.NumericalMethods.Extensions;
 using ChaosSoft.NumericalMethods.Lyapunov;
 using System;
@@ -86,20 +85,22 @@ namespace TsaToolbox
         private void SetLyapunovResult(MainWindow wnd)
         {
             wnd.le_resultTbox.Background = Brushes.LightGreen;
-            string result;
+            string result = GetLyapunovResultString(wnd.le_dtTbox.ReadDouble());
+            wnd.le_resultTbox.Text = result;
 
-            if (Method is LeSpecSanoSawada ss)
-            {
-                double dt = wnd.le_dtTbox.ReadDouble();
-                double[] leSpec = ss.Result.Select(e => e / dt).ToArray();
-                wnd.le_resultTbox.Text = Format.General(leSpec, " ", 6);
-            }
-            else
-            {
-                wnd.le_resultTbox.Text = (Method as IDescribable).GetResultAsString();
-            }
+            // TODO: to remove?
+            //if (Method is LeSpecSanoSawada ss)
+            //{
+            //    double dt = wnd.le_dtTbox.ReadDouble();
+            //    double[] leSpec = ss.Result.Select(e => e / dt).ToArray();
+            //    wnd.le_resultTbox.Text = NumFormat.Format(leSpec, " ");
+            //}
+            //else
+            //{
+            //    wnd.le_resultTbox.Text = (Method as IStringifyResult).StringifyResult;
+            //}
            
-            wnd.le_logTbox.Text = Method.ToString() + "\n\nResult:\n" + (Method as IDescribable).GetResultAsString() + "\n\nLog:\n" + Method.Log.ToString();
+            wnd.le_logTbox.Text = Method.ToString() + "\n\nResult:\n" + result + "\n\nLog:\n"/* + Method.Log.ToString()*/;
 
             if (Method is LleKantz || Method is LleRosenstein)
             {
@@ -153,6 +154,26 @@ namespace TsaToolbox
             }
         }
 
+        private string GetLyapunovResultString(double dt)
+        {
+            string leNumFormat = "0.#####";
+
+            switch (Method)
+            {
+                case LeSpecSanoSawada ss:
+                    double[] leSpec = ss.Result.Select(e => e / dt).ToArray();
+                    return NumFormat.Format(leSpec, leNumFormat, " ");
+                case LleWolf wolf:
+                    return NumFormat.Format(wolf.Result, leNumFormat);
+                case LleRosenstein ros:
+                    return ros.Success ? "slope calculated" : "calculation error";
+                case LleKantz kantz:
+                    return kantz.Success ? "slope calculated" : "calculation error";
+                default:
+                    return "NA";
+            }
+        }
+
         private string FillLyapunovChart(MainWindow wnd)
         {
             var result = string.Empty;
@@ -163,7 +184,7 @@ namespace TsaToolbox
             {
                 wnd.le_slopeChart.Plot.YLabel("LE");
                 wnd.le_slopeChart.Plot.Title("Lyapunov Exponent in time");
-                wnd.le_slopeChart.Plot.AddAnnotation(wolf.GetResultAsString(), 0, 0);
+                wnd.le_slopeChart.Plot.AddAnnotation(GetLyapunovResultString(1), 0, 0);
             }
             else
             {
@@ -180,7 +201,7 @@ namespace TsaToolbox
                 wnd.le_slopeChart.Plot.AddScatter(tsSector.XValues, tsSector.YValues, System.Drawing.Color.Red, 2);
 
                 var slope = Math.Atan2(Method.Slope.DataPoints[endPoint].Y - Method.Slope.DataPoints[startPoint].Y, Method.Slope.DataPoints[endPoint].X - Method.Slope.DataPoints[startPoint].X);
-                result = Format.General(slope / wnd.le_dtTbox.ReadDouble());
+                result = NumFormat.Format(slope / wnd.le_dtTbox.ReadDouble());
                 wnd.le_slopeChart.Plot.AddAnnotation(result, 0, 0);
             }
 

@@ -23,6 +23,7 @@
                 </DockPanel>
 
                 <CheckBox x:Name="fft_radCbox" Content="use radians" Margin="0,10,0,0" HorizontalAlignment="Center" IsChecked="{Binding UseRadians}"/>
+                <CheckBox x:Name="fft_logScaleCbox" Content="log scale" Margin="0,10,0,0" HorizontalAlignment="Center" IsChecked="{Binding LogScale}"/>
             </StackPanel>
             <WpfPlot x:Name="ch_FftChart" HorizontalAlignment="Left" Width="320" Height="240" VerticalAlignment="Top" Margin="0,0,0,0" Cursor="Cross"></WpfPlot>
         </Grid>

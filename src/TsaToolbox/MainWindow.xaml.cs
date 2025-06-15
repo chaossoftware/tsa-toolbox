@@ -1,4 +1,5 @@
-﻿using ChaosSoft.Core.Data;
+﻿using ChaosSoft.Core;
+using ChaosSoft.Core.Data;
 using ChaosSoft.Core.IO;
 using ChaosSoft.NumericalMethods;
 using ChaosSoft.NumericalMethods.Lyapunov;
@@ -197,7 +198,15 @@ namespace TsaToolbox
             {
                 var fftTs = GetFft();
                 string yLabel = "power (dB)";
-                Charts.PlotScatter(FftView.ch_FftChart, fftTs.XValues, fftTs.YValues, "ω", yLabel);
+
+                if (Setup.Fft.LogScale)
+                {
+                    Charts.PlotScatterLogScale(FftView.ch_FftChart, fftTs.XValues, fftTs.YValues, "ω", yLabel);
+                }
+                else
+                {
+                    Charts.PlotScatter(FftView.ch_FftChart, fftTs.XValues, fftTs.YValues, "ω", yLabel);
+                }
             }
 
             if (Setup.Wavelet.Enabled)
@@ -307,7 +316,7 @@ namespace TsaToolbox
 
             if (ch_signalCbox.IsChecked.Value)
             {
-                DataWriter.CreateDataFile(fName + "_signal.dat", Format.General(Source.Data.TimeSeries.YValues, "\n", 6));
+                FileUtils.CreateDataFile(fName + "_signal.dat", NumFormat.Format(Source.Data.TimeSeries.YValues, "\n"));
                 Charts.SavePlot(ch_SignalChart, fName + "_signal.png");
             }
 
@@ -359,9 +368,9 @@ namespace TsaToolbox
                 .AppendLine()
                 .AppendLine("Execution log:")
                 .AppendLine()
-                .AppendLine(_lyapunov.Method.Log.ToString());
+                .AppendLine(/*_lyapunov.Method.Log.ToString()*/); // TODO: return log
 
-            DataWriter.CreateDataFile(baseFileName + "_lyapunov.txt", sb.ToString());
+            FileUtils.CreateDataFile(baseFileName + "_lyapunov.txt", sb.ToString());
         }
 
         private DataSeries GetFft() =>

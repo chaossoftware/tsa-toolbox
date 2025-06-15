@@ -1,6 +1,7 @@
 ﻿using ChaosSoft.Core.Data;
 using ChaosSoft.Core.DataUtils;
 using System.Drawing;
+using TsaToolbox.Helpers;
 using TsaToolbox.Models;
 
 namespace TsaToolbox
@@ -33,6 +34,14 @@ namespace TsaToolbox
             ClearPlot(plot);
             plot.Plot.AddScatter(xs, ys, _mainColor, 0.5f, 0f);
             RenderPlot(plot, xLabel, yLabel);
+        }
+
+        internal void PlotScatterLogScale(ScottPlot.WpfPlot plot, double[] xs, double[] ys, string xLabel, string yLabel)
+        {
+            ClearPlot(plot);
+            double[] logYs = CustomLogScale.Calculate(ys);
+            plot.Plot.AddScatter(xs, logYs, _mainColor, 0.5f, 0f);
+            RenderPlot(plot, xLabel, "Log " + yLabel);
         }
 
         internal void PlotSignal(ScottPlot.WpfPlot plot, double[] series, string xLabel, string yLabel)

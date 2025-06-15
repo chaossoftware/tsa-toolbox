@@ -4,6 +4,8 @@ public class FftSetup
 {
     public bool Enabled { get; set; }
 
+    public bool LogScale { get; set; }
+
     public double Dt { get; set; }
 
     public double OmegaFrom { get; set; }

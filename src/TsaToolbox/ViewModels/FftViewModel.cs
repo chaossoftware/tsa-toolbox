@@ -16,6 +16,7 @@ public class FftViewModel
         OmegaFrom = 0.5;
         OmegaTo = 10;
         UseRadians = false;
+        LogScale = false;
     }
 
     [Notify]
@@ -51,5 +52,12 @@ public class FftViewModel
     {
         get => parameters.UseRadians;
         set => parameters.UseRadians = value;
+    }
+
+    [Notify]
+    public bool LogScale
+    {
+        get => parameters.LogScale;
+        set => parameters.LogScale = value;
     }
 }

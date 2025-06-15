@@ -1,5 +1,6 @@
 ﻿using ChaosSoft.Core.Data;
 using ChaosSoft.Core.DataUtils;
+using ChaosSoft.Core.IO;
 using Microsoft.Win32;
 using System;
 using TsaToolbox.Models;
@@ -50,9 +51,11 @@ namespace TsaToolbox.Commands
             }
             else
             {
-                _source.Data = parameterized ?
-                    new SourceData(fileName, _source.LinesToSkip, _source.LinesToRead) :
-                    new SourceData(fileName);
+                IDataReader dataReader = parameterized ?
+                    new PlainTextFileReader(_source.LinesToSkip, _source.LinesToRead) :
+                    new PlainTextFileReader();
+
+                _source.Data = new SourceData(dataReader, fileName);
             }
 
             int[] columnsCount = Vector.CreateUniform(_source.Data.ColumnsCount, 1, 1);
